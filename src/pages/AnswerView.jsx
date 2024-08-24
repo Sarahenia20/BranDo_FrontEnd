@@ -72,7 +72,7 @@ export default function ViewAnswers() {
           style={{ display: 'flex', alignItems: 'center', marginLeft: '1rem' }}
         >
           <motion.img 
-            src='../BranDo.png' 
+            src='./BranDo.png' 
             alt="logo" 
             className="w-20 h-20 object-contain"  
             {...headContentAnimation}

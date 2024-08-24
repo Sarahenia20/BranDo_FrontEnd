@@ -1,10 +1,30 @@
 import { Button, Stack, TextField, Typography, colors } from '@mui/material';
-import React from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
 import { ScreenMode } from '../pages/Signup';
 
 const ResetForm = ({ onSwitchMode }) => {
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setMessage('');
+    setError('');
+
+    try {
+      const response = await axios.post('/api/password/email', { email });
+      setMessage(response.data.message);
+    } catch (error) {
+      setError(error.response?.data?.message || 'An error occurred. Please try again.');
+    }
+  };
+
   return (
     <Stack
+      component="form" // Make the Stack a form element
+      onSubmit={handleSubmit} // Attach the submit handler
       justifyContent="flex-start"
       alignItems="center"
       sx={{
@@ -43,17 +63,28 @@ const ResetForm = ({ onSwitchMode }) => {
           </Typography>
         </Stack>
 
+        {message && (
+          <Typography color="green">{message}</Typography>
+        )}
+        {error && (
+          <Typography color="red">{error}</Typography>
+        )}
+
         <Stack spacing={3}>
           <Stack spacing={2}>
             <Stack spacing={1}>
               <Typography color={colors.grey[800]}>Email</Typography>
               <TextField 
-                placeholder="Enter your email" // Add placeholder
+                placeholder="Enter your email" 
                 fullWidth 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)} // Handle input change
+                required // Make the field required
               />
             </Stack>
           </Stack>
           <Button
+            type="submit" // Make this a submit button
             variant='contained'
             size='large'
             fullWidth
