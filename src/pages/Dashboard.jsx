@@ -1,18 +1,9 @@
-import { motion } from 'framer-motion';
-import { Canvas } from '@react-three/fiber';
-import { ArrowLeftIcon } from '@heroicons/react/24/solid';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  headContainerAnimation,
-  headContentAnimation,
-  headTextAnimation,
-} from '../config/motion';
-import '../styles.css'; 
+import { ArrowLeftIcon } from '@heroicons/react/24/solid';
+import axiosClient from "../axios.js";
 import PageComponent from "../components/PageComponent";
 import DashboardCard from "../components/DashboardCard.jsx";  
-import { useEffect, useState } from "react";
-import axiosClient from "../axios.js";
-import LightBlobs from '../components/LightBlobs'; 
 import TButton from "../components/core/TButton.jsx";
 import { EyeIcon, PencilIcon } from "@heroicons/react/24/outline";
 
@@ -47,88 +38,48 @@ export const Dashboard = () => {
 
     return (
         <PageComponent title="">
-            {/* Animated Light Blobs in the Background */}
-            <Canvas className="absolute inset-0 z-[-1] overflow-hidden">
-                <LightBlobs color="yellow" position={[-2, 1, 0]} />
-                <LightBlobs color="pink" position={[2, -1, 0]} />
-                <LightBlobs color="blue" position={[0, 2, -2]} />
-            </Canvas>
-
             {/* Header Section */}
             <div
                 style={{
                     width: '100%',
-                    position: 'fixed',
-                    top: '0',
-                    left: '0',
-                    right: '0',
                     display: 'flex',
-                    justifyContent: 'center',  // Center the content
+                    justifyContent: 'space-between',
                     alignItems: 'center',
                     padding: '1rem',
-                    zIndex: 100,  // Keep header on top
-                    backgroundColor: 'white',  // Add background color to avoid overlap
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',  // Add subtle shadow
-                    height: '80px',  // Fixed height for the header
+                    zIndex: 100,
+                    backgroundColor: 'white',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
                 }}
             >
-                <motion.div 
-                    initial="hidden" 
-                    animate="visible" 
-                    variants={headContainerAnimation}
-                    style={{ display: 'flex', alignItems: 'center', position: 'relative', width: '100%' }}
+                {/* Back Button */}
+                <button 
+                    className="flex items-center space-x-1 p-2 rounded-full"
+                    onClick={handleBackClick}
                 >
-                    {/* Back Button */}
-                    <motion.button 
-                        className="flex items-center space-x-1 p-2 rounded-full"
-                        onClick={handleBackClick}
-                        {...headContentAnimation}
-                        style={{ position: 'absolute', left: '1rem' }}  // Position on the left
-                    >
-                        <ArrowLeftIcon className="h-6 w-6 text-gray-600" />
-                        <span className="text-gray-600">Back</span>
-                    </motion.button>
+                    <ArrowLeftIcon className="h-6 w-6 text-gray-600" />
+                    <span className="text-gray-600">Back</span>
+                </button>
 
-                    {/* Logo on the Left */}
-                    <motion.div 
-                        initial="hidden" 
-                        animate="visible" 
-                        variants={headContainerAnimation}
-                        style={{ 
-                            display: 'flex', 
-                            alignItems: 'center',
-                            position: 'absolute',
-                            left: '6rem',  // Moved the logo to the right
-                        }}
-                    >
-                        <motion.img 
-                            src='./BranDo.png' 
-                            alt="logo" 
-                            className="w-20 h-20 object-contain"  
-                            {...headContentAnimation}
-                            style={{ marginRight: '0.5rem' }}
-                        />
-                        <motion.img 
-                            src='./BranDoTitle.png'  
-                            alt="logo title" 
-                            className="w-32 h-20 object-contain"  
-                            {...headTextAnimation}
-                        />
-                    </motion.div>
+                {/* Logo and Title */}
+                <div className="flex items-center justify-center">
+                    <img 
+                        src='./BranDo.png' 
+                        alt="logo" 
+                        className="w-16 h-16 object-contain mr-2"  
+                    />
+                    <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
+                </div>
 
-                    {/* Dashboard Title in the Center */}
-                    <motion.h1
-                        className="text-2xl font-bold text-gray-800"
-                        {...headTextAnimation}
-                        style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}  // Centered title
-                    >
-                        Dashboard
-                    </motion.h1>
-                </motion.div>
+                {/* Placeholder for alignment */}
+                <div style={{ width: '40px' }}></div>
             </div>
 
             {/* Main Dashboard Content */}
-            <div style={{ paddingTop: '100px', textAlign: 'center', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}> {/* Center the content vertically */}
+            <div style={{ paddingTop: '80px', textAlign: 'center', minHeight: '100vh' }}>
                 <div>
                     {loading && <div className="flex justify-center">Loading...</div>}
                     {!loading && (
@@ -191,10 +142,12 @@ export const Dashboard = () => {
                                   Edit Survey
                                 </TButton>
 
-                                <TButton link>
-                                  <EyeIcon className="w-5 h-5 mr-2" />
-                                  View Answers
-                                </TButton>
+                                <TButton to={`/surveys/${data.latestSurvey.id}/answers`} link>
+  <EyeIcon className="w-5 h-5 mr-2" />
+  View Answers
+</TButton>
+
+
                               </div>
                             </div>
                           )}
@@ -236,10 +189,9 @@ export const Dashboard = () => {
                 </div>
 
                 {/* Green Gradient Button */}
-                <motion.button
+                <button
                     className="mt-12 px-8 py-4 rounded-full text-white font-bold text-lg"
                     onClick={handleSurveysClick}
-                    whileHover={{ scale: 1.1 }}
                     style={{
                         background: 'linear-gradient(90deg, #00C853 0%, #B2FF59 100%)',
                         boxShadow: '0px 0px 20px rgba(0, 200, 83, 0.5)',
@@ -247,7 +199,7 @@ export const Dashboard = () => {
                     }}
                 >
                     Go to Surveys
-                </motion.button>
+                </button>
             </div>
         </PageComponent>
     );

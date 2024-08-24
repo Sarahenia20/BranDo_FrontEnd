@@ -12,6 +12,10 @@ import Dashboard from './pages/Dashboard.jsx';
 import Surveys from './pages/Surveys.jsx';
 import SurveyView from './pages/SurveyView.jsx';
 import SurveyPublicView from './pages/SurveyPublicView.jsx';
+import ViewAnswers from './pages/AnswerView'; // Make sure the path is correct
+
+
+
 
 const App = () => {
   const location = useLocation();
@@ -31,7 +35,12 @@ const App = () => {
           <Route path="/surveyspace" element={<Dashboard />} />
           <Route path="/surveys" element={<Surveys />} />
           <Route path="/surveys/create" element={<SurveyView />} />
+          <Route path="/surveys/:id" element={<SurveyView />} />  
+          <Route path="/view/survey/:slug" element={<SurveyPublicView />} />
           <Route path="/survey/public/:slug" element={<SurveyPublicView />} />
+          <Route path="/surveys/:id/answers" element={<ViewAnswers />} />
+
+
         </Routes>
         {isCHomeRoute && <Canvas />} 
         {isCustomizerRoute && <Customizer />}

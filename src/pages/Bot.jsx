@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Stack, Menu, MenuItem } from '@mui/material';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, Sphere } from '@react-three/drei';
 import { motion } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
-import { ArrowLeftIcon,  Cog6ToothIcon, ArrowLeftOnRectangleIcon } from '@heroicons/react/24/solid';
+import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import { useNavigate } from 'react-router-dom';
 import {
   headContainerAnimation,
@@ -11,8 +12,30 @@ import {
   headTextAnimation,
   slideAnimation
 } from '../config/motion';
-import '../styles.css'; 
 
+// LightBlob component
+const LightBlob = ({ position, color, scale }) => {
+  return (
+    <Sphere args={[1, 32, 32]} scale={scale} position={position}>
+      <meshStandardMaterial attach="material" color={color} emissive={color} emissiveIntensity={0.5} />
+    </Sphere>
+  );
+};
+
+// LightBlobs component with additional yellow blob
+const LightBlobs = () => {
+  return (
+    <>
+      <ambientLight intensity={0.2} />
+      <pointLight position={[10, 10, 10]} />
+      <LightBlob position={[-6, 2, -10]} color="lightblue" scale={[8, 8, 8]} />
+      <LightBlob position={[6, -3, -12]} color="pink" scale={[10, 10, 10]} />
+      <LightBlob position={[-4, -1, -8]} color="lightyellow" scale={[6, 6, 6]} />
+      <LightBlob position={[4, 3, -14]} color="lightpink" scale={[9, 9, 9]} />
+      <LightBlob position={[0, 0, -15]} color="yellow" scale={[7, 7, 7]} /> {/* New yellow blob */}
+    </>
+  );
+};
 
 const Bot = () => {
     const [messages, setMessages] = useState([
@@ -24,8 +47,6 @@ const Bot = () => {
 
     const [input, setInput] = useState('');
     const [generatingAnswer, setGeneratingAnswer] = useState(false);
-    const [anchorEl, setAnchorEl] = useState(null);
-    const open = Boolean(anchorEl);
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
@@ -74,13 +95,13 @@ const Bot = () => {
         navigate('/main');
     };
 
-    
-
     return (
-        <div className="full-background">
-            <div className="decorative-shape1"></div> {/* Decorative Shape 1 */}
-            <div className="decorative-shape2"></div> {/* Decorative Shape 2 */}
-            <div className="decorative-shape3"></div> {/* Decorative Shape 3 */}
+        <div className="relative w-full h-full">
+            {/* Canvas for the animated blobs */}
+            <Canvas className="absolute inset-0 z-[-1]">
+                <LightBlobs />
+                <OrbitControls enableZoom={false} autoRotate autoRotateSpeed={0.5} />
+            </Canvas>
 
             {/* Parent Container for Navigation Icons */}
             <div
@@ -104,8 +125,6 @@ const Bot = () => {
                     <ArrowLeftIcon className="h-6 w-6 text-gray-600" />
                     <span className="text-gray-600">Back</span>
                 </button>
-
-               
             </div>
 
             <motion.section 

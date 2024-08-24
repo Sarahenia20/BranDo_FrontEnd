@@ -1,18 +1,16 @@
 import { LinkIcon, PhotoIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TButton from "../components/core/TButton";
 import PageComponent from "../components/PageComponent";
 import axiosClient from "../axios.js";
 import { useNavigate, useParams } from "react-router-dom";
 import SurveyQuestions from "../components/SurveyQuestions";
 import { v4 as uuidv4 } from "uuid";
-import { useEffect } from "react";
 import { useStateContext } from "../context/ContextProvider";
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { Link } from 'react-router-dom';  
-import { motion } from 'framer-motion'; // Ensure this is imported
+import { motion } from 'framer-motion';
 import { slideAnimation } from '../config/motion';
-
 
 export default function SurveyView() {
   const { showToast } = useStateContext();
@@ -65,7 +63,6 @@ export default function SurveyView() {
 
     res
       .then((res) => {
-        console.log(res);
         navigate("/surveys");
         if (id) {
           showToast("The survey was updated");
@@ -79,6 +76,15 @@ export default function SurveyView() {
         }
         console.log(err, err.response);
       });
+  };
+
+  const onDelete = () => {
+    if (window.confirm("Are you sure you want to delete this survey?")) {
+      axiosClient.delete(`/survey/${id}`).then(() => {
+        showToast("The survey was deleted");
+        navigate("/surveys");
+      });
+    }
   };
 
   function onQuestionsUpdate(questions) {
@@ -99,10 +105,6 @@ export default function SurveyView() {
     setSurvey({ ...survey });
   };
 
-  const onDelete = () => {
-
-  }
-
   useEffect(() => {
     if (id) {
       setLoading(true);
@@ -111,42 +113,39 @@ export default function SurveyView() {
         setLoading(false);
       });
     }
-  }, []);
-
+  }, [id]);
 
   return (
-    
     <PageComponent
-    title={
-      <div className="flex items-center gap-2">
-        <Link to="/surveys" className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900">
-          <ArrowLeftIcon className="h-5 w-5 mr-2" />
-        </Link>
-        {!id ? "Create new Survey" : "Update Survey"}
-  
-        <motion.header className="flex items-center ml-4" {...slideAnimation("down")}>
-          <img 
-            src='../BranDo.png'
-            alt="logo"
-            className="w-20 h-20 object-contain"  
-          />
-        </motion.header>
-      </div>
-    }
-    buttons={
-      <div className="flex gap-2">
-        <TButton color="green" href={`/survey/public/${survey.slug}`}>
-          <LinkIcon className="h-4 w-4 mr-2" />
-          Public Link
-        </TButton>
-        <TButton color="red" onClick={onDelete}>
-          <TrashIcon className="h-4 w-4 mr-2" />
-          Delete
-        </TButton>
-      </div>
-    }
-  >
-  
+      title={
+        <div className="flex items-center gap-2">
+          <Link to="/surveys" className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900">
+            <ArrowLeftIcon className="h-5 w-5 mr-2" />
+          </Link>
+          {!id ? "Create new Survey" : "Update Survey"}
+
+          <motion.header className="flex items-center ml-4" {...slideAnimation("down")}>
+            <img 
+              src='../BranDo.png'
+              alt="logo"
+              className="w-20 h-20 object-contain"  
+            />
+          </motion.header>
+        </div>
+      }
+      buttons={
+        <div className="flex gap-2">
+          <TButton color="green" href={`/survey/public/${survey.slug}`}>
+            <LinkIcon className="h-4 w-4 mr-2" />
+            Public Link
+          </TButton>
+          <TButton color="red" onClick={onDelete}>
+            <TrashIcon className="h-4 w-4 mr-2" />
+            Delete
+          </TButton>
+        </div>
+      }
+    >
       {loading && <div className="text-center text-lg">Loading...</div>}
       {!loading && (
         <form action="#" method="POST" onSubmit={onSubmit}>
@@ -156,40 +155,41 @@ export default function SurveyView() {
                 <div className="bg-red-500 text-white py-3 px-3">{error}</div>
               )}
 
-              {/*Image*/}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Photo
-                </label>
-                <div className="mt-1 flex items-center">
-                  {survey.image_url && (
-                    <img
-                      src={survey.image_url}
-                      alt=""
-                      className="w-32 h-32 object-cover"
-                    />
-                  )}
-                  {!survey.image_url && (
-                    <span className="flex justify-center  items-center text-gray-400 h-12 w-12 overflow-hidden rounded-full bg-gray-100">
-                      <PhotoIcon className="w-8 h-8" />
-                    </span>
-                  )}
-                  <button
-                    type="button"
-                    className="relative ml-5 rounded-md border border-gray-300 bg-white py-2 px-3 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                  >
-                    <input
-                      type="file"
-                      className="absolute left-0 top-0 right-0 bottom-0 opacity-0"
-                      onChange={onImageChoose}
-                    />
-                    Change
-                  </button>
-                </div>
-              </div>
-              {/*Image*/}
+<div>
+  <label className="block text-sm font-medium text-gray-700">
+    Photo
+  </label>
+  <div className="mt-1 flex items-center">
+    {survey.image_url && (
+      <img
+        src={survey.image_url}
+        alt=""
+        className="w-32 h-32 object-cover"
+      />
+    )}
+    {!survey.image_url && (
+      <span className="flex justify-center items-center text-gray-400 h-12 w-12 overflow-hidden rounded-full bg-gray-100">
+        <PhotoIcon className="w-8 h-8" />
+      </span>
+    )}
+    <button
+      type="button"
+      className="ml-5 rounded-md border border-gray-300 bg-white py-2 px-3 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+      onClick={() => document.getElementById('fileInput').click()}
+    >
+      Change
+    </button>
+    <input
+      type="file"
+      id="fileInput"
+      className="hidden"
+      onChange={onImageChoose}
+    />
+  </div>
+</div>
 
-              {/*Title*/}
+
+              {/* Title */}
               <div className="col-span-6 sm:col-span-3">
                 <label
                   htmlFor="title"
@@ -209,9 +209,9 @@ export default function SurveyView() {
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 />
               </div>
-              {/*Title*/}
+              {/* Title */}
 
-              {/*Description*/}
+              {/* Description */}
               <div className="col-span-6 sm:col-span-3">
                 <label
                   htmlFor="description"
@@ -219,7 +219,6 @@ export default function SurveyView() {
                 >
                   Description
                 </label>
-                {/* <pre>{ JSON.stringify(survey, undefined, 2) }</pre> */}
                 <textarea
                   name="description"
                   id="description"
@@ -231,9 +230,9 @@ export default function SurveyView() {
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 ></textarea>
               </div>
-              {/*Description*/}
+              {/* Description */}
 
-              {/*Expire Date*/}
+              {/* Expire Date */}
               <div className="col-span-6 sm:col-span-3">
                 <label
                   htmlFor="expire_date"
@@ -252,9 +251,9 @@ export default function SurveyView() {
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 />
               </div>
-              {/*Expire Date*/}
+              {/* Expire Date */}
 
-              {/*Active*/}
+              {/* Active */}
               <div className="flex items-start">
                 <div className="flex h-5 items-center">
                   <input
@@ -280,7 +279,7 @@ export default function SurveyView() {
                   </p>
                 </div>
               </div>
-              {/*Active*/}
+              {/* Active */}
 
               <button type="button" onClick={addQuestion}>
                 Add question
