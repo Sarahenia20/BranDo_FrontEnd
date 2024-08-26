@@ -6,7 +6,7 @@
 
 html {
   font-family: "Inter", sans-serif;
- }
+}
 
 @supports (font-variation-settings: normal) {
   html {
@@ -89,12 +89,13 @@ input[type="file"] {
 .sketch-picker > div:nth-child(3) {
   display: none !important;
 }
+
+/* Simplified canvas-container */
 .canvas-container {
-  @apply absolute inset-0 w-full h-full;
+  @apply absolute inset-0 w-full h-full z-10 mt-[-110px] flex items-end justify-center; /* align-items and justify-content */
 }
-.canvas-container {
-  @apply z-10; /* Ensure it's layered correctly */
-}
+
+
 .background-blobs {
-  @apply z-0; /* Ensure background elements are behind */
+  @apply absolute inset-0 z-10; /* Ensure background elements are behind */
 }

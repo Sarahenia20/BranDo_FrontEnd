@@ -12,7 +12,7 @@ import Dashboard from './pages/Dashboard.jsx';
 import Surveys from './pages/Surveys.jsx';
 import SurveyView from './pages/SurveyView.jsx';
 import SurveyPublicView from './pages/SurveyPublicView.jsx';
-import ViewAnswers from './pages/AnswerView'; // Make sure the path is correct
+import ViewAnswers from './pages/AnswerView'; 
 
 
 
@@ -42,7 +42,13 @@ const App = () => {
 
 
         </Routes>
-        {isCHomeRoute && <Canvas />} 
+        {isCHomeRoute && (
+          <div className="canvas-container flex items-end justify-center">
+  <Canvas />
+</div>
+
+)}
+
         {isCustomizerRoute && <Customizer />}
       </main>
     </div>

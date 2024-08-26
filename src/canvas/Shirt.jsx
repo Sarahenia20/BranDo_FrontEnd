@@ -1,8 +1,7 @@
-import React from 'react'
-import { easing } from 'maath';
-import { useSnapshot } from 'valtio';
+import React from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Decal, useGLTF, useTexture } from '@react-three/drei';
+import { useSnapshot } from 'valtio';
 
 import state from '../store';
 
@@ -13,7 +12,10 @@ const Shirt = () => {
   const logoTexture = useTexture(snap.logoDecal);
   const fullTexture = useTexture(snap.fullDecal);
 
-  useFrame((state, delta) => easing.dampC(materials.lambert1.color, snap.color, 0.25, delta));
+  useFrame((state, delta) => {
+    // Apply color changes to the material
+    materials.lambert1.color.set(snap.color);
+  });
 
   const stateString = JSON.stringify(snap);
 
@@ -24,11 +26,12 @@ const Shirt = () => {
         geometry={nodes.T_Shirt_male.geometry}
         material={materials.lambert1}
         material-roughness={1}
+        scale={[0.87,0.87,0.87]} // Increased the scale 8 times
         dispose={null}
       >
-        {/* T-shirt full texture */}
+        {/* Full texture */}
         {snap.isFullTexture && (
-          <Decal 
+          <Decal
             position={[0, 0, 0]}
             rotation={[0, 0, 0]}
             scale={1}
@@ -36,26 +39,21 @@ const Shirt = () => {
           />
         )}
 
-        {/* T-shirt logo */}
+        {/* Logo texture */}
         {snap.isLogoTexture && (
-          <Decal 
+          <Decal
             position={[0, 0.04, 0.15]}
             rotation={[0, 0, 0]}
             scale={0.15}
             map={logoTexture}
-            {...{ mapAnisotropy: 16, depthTest: false, depthWrite: true }}
+            anisotropy={16}
+            depthTest={false}
+            depthWrite={true}
           />
         )}
       </mesh>
     </group>
-  )
+  );
 }
 
-export default Shirt
-
-/* The properties mapAnisotropy, depthTest, and depthWrite were not recognized in the first version of the code because they were not defined as valid props for the Decal component.
-
-In React, components can only receive and recognize props that are explicitly defined and expected by the component. When you pass a prop to a component that is not recognized or expected, React will ignore that prop and it will not have any effect on the component. 
-
-By using the spread syntax in the second version, these properties are properly spread onto the Decal component, allowing it to receive and utilize the additional properties correctly.
-*/
+export default Shirt;
