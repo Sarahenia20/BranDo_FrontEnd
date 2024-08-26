@@ -89,3 +89,12 @@ input[type="file"] {
 .sketch-picker > div:nth-child(3) {
   display: none !important;
 }
+.canvas-container {
+  @apply absolute inset-0 w-full h-full;
+}
+.canvas-container {
+  @apply z-10; /* Ensure it's layered correctly */
+}
+.background-blobs {
+  @apply z-0; /* Ensure background elements are behind */
+}

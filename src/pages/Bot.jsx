@@ -12,6 +12,7 @@ import {
   headTextAnimation,
   slideAnimation
 } from '../config/motion';
+import { useStateContext } from '../context/ContextProvider'; // Importing the context to manage state
 
 // LightBlob component
 const LightBlob = ({ position, color, scale }) => {
@@ -38,6 +39,7 @@ const LightBlobs = () => {
 };
 
 const Bot = () => {
+    const { userToken } = useStateContext(); // Access the userToken from the context
     const [messages, setMessages] = useState([
         {
             content: "Let's Build your Brand and expand your business with BranDo! Ask me about anything.",
@@ -92,7 +94,11 @@ const Bot = () => {
     };
 
     const handleBackClick = () => {
-        navigate('/main');
+        if (userToken) { // Ensure userToken exists before navigating
+            navigate('/main');
+        } else {
+            navigate('/signup'); // Redirect to signup if the token is not present
+        }
     };
 
     return (

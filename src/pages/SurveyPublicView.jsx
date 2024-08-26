@@ -5,7 +5,7 @@ import axiosClient from "../axios";
 import PublicQuestionView from "../components/PublicQuestionView";
 
 export default function SurveyPublicView() {
-  const answers = {};
+  const [answers, setAnswers] = useState({});
   const [surveyFinished, setSurveyFinished] = useState(false);
   const [survey, setSurvey] = useState({
     questions: [],
@@ -24,11 +24,13 @@ export default function SurveyPublicView() {
       .catch(() => {
         setLoading(false);
       });
-  }, []);
+  }, [slug]);
 
-  function answerChanged(question, value) {
-    answers[question.id] = value;
-    console.log(question, value);
+  function answerChanged(questionId, value) {
+    setAnswers((prevAnswers) => ({
+      ...prevAnswers,
+      [questionId]: value,
+    }));
   }
 
   function onSubmit(ev) {
@@ -40,8 +42,10 @@ export default function SurveyPublicView() {
         answers,
       })
       .then((response) => {
-        debugger;
         setSurveyFinished(true);
+      })
+      .catch((error) => {
+        console.error("Failed to submit answers:", error);
       });
   }
 
@@ -49,7 +53,7 @@ export default function SurveyPublicView() {
     <div>
       {loading && <div className="flex justify-center">Loading..</div>}
       {!loading && (
-        <form onSubmit={(ev) => onSubmit(ev)} className="container mx-auto p-4">
+        <form onSubmit={onSubmit} className="container mx-auto p-4">
           <div className="grid grid-cols-6">
             <div className="mr-4">
               <img src={survey.image_url} alt="" />
@@ -77,7 +81,8 @@ export default function SurveyPublicView() {
                     key={question.id}
                     question={question}
                     index={index}
-                    answerChanged={(val) => answerChanged(question, val)}
+                    selectedAnswer={answers[question.id]}
+                    answerChanged={(value) => answerChanged(question.id, value)}
                   />
                 ))}
               </div>

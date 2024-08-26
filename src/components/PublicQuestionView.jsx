@@ -1,9 +1,16 @@
 export default function PublicQuestionView({
   question,
   index,
-  answerChanged,
   selectedAnswer,
 }) {
+  const isChecked = (optionText) => {
+    // Check if the option text is included in the selectedAnswer array
+    if (Array.isArray(selectedAnswer)) {
+      return selectedAnswer.includes(optionText);
+    }
+    return false;
+  };
+
   return (
     <>
       <fieldset className="mb-4">
@@ -33,7 +40,7 @@ export default function PublicQuestionView({
           )}
           {question.type === "radio" && (
             <div>
-              {question.data.options.map((option, ind) => (
+              {question.data.options.map((option) => (
                 <div key={option.uuid} className="flex items-center">
                   <input
                     id={option.uuid}
@@ -56,12 +63,12 @@ export default function PublicQuestionView({
           )}
           {question.type === "checkbox" && (
             <div>
-              {question.data.options.map((option, ind) => (
+              {question.data.options.map((option) => (
                 <div key={option.uuid} className="flex items-center">
                   <input
                     id={option.uuid}
                     type="checkbox"
-                    checked={selectedAnswer.includes(option.text)}
+                    checked={isChecked(option.text)}
                     disabled
                     className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
                   />

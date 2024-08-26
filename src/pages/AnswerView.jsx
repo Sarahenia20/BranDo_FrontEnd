@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'; // Ensure useState and useEffect are imported
 import { useParams, useNavigate } from 'react-router-dom';
 import axiosClient from '../axios';
 import PublicQuestionView from '../components/PublicQuestionView';
@@ -15,7 +15,7 @@ export default function ViewAnswers() {
   useEffect(() => {
     axiosClient.get(`/survey/${id}`)
       .then((response) => {
-        setSurvey(response.data.data);
+        setSurvey(response.data.data);  // Assuming the API response has the survey data here
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -35,7 +35,7 @@ export default function ViewAnswers() {
 
   return (
     <div className="relative w-full h-full">
-      {/* Parent Container for Navigation Icons */}
+      {/* Navigation and Logo Section */}
       <div
         style={{
           width: '100%',
@@ -49,7 +49,6 @@ export default function ViewAnswers() {
           zIndex: 1000,
         }}
       >
-        {/* Back Button */}
         <button 
           className="flex items-center space-x-1 p-2 rounded-full hover:bg-gray-200"
           onClick={handleBackClick}
@@ -59,11 +58,10 @@ export default function ViewAnswers() {
         </button>
       </div>
 
-      {/* Logo and Title Section */}
       <motion.section
         className='mx-auto p-5 fixed inset-0 max-w-[1024px] overflow-hidden'
         {...headContainerAnimation}
-        style={{ zIndex: 2, paddingTop: '3rem' }} // Adjust padding top so content doesn't overlap with header
+        style={{ zIndex: 2, paddingTop: '3rem' }}
       >
         <motion.div 
           initial="hidden" 
@@ -96,7 +94,9 @@ export default function ViewAnswers() {
               key={question.id} 
               question={question} 
               index={index} 
-              selectedAnswer={question.answer || ""}
+              selectedAnswer={
+                question.answers ? question.answers.map(a => a.answer) : []
+              }
             />
           ))}
         </div>

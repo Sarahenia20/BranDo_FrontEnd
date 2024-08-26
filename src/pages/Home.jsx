@@ -11,14 +11,34 @@ const Home = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
-  const { currentUser, setCurrentUser, setUserToken } = useStateContext(); // Access currentUser from context
+  const { currentUser, setCurrentUser, userToken, setUserToken } = useStateContext(); // Access currentUser from context
 
   useEffect(() => {
-    if (!currentUser?.email) {
-      // Redirect to signup if not logged in
+    if (!userToken) {
+      console.log("No token found, redirecting to signup.");
       navigate('/signup');
+      return;
     }
-  }, [currentUser, navigate]);
+
+    console.log("Token found, staying on the home page.");
+    console.log("Current User:", currentUser);
+    console.log("User Token:", userToken);
+
+    // Only fetch user data if `currentUser` is not already populated
+    if (!currentUser || Object.keys(currentUser).length === 0) {
+      axiosClient.get('/me')
+        .then(({ data }) => {
+          console.log("Fetched User:", data);
+          setCurrentUser(data);
+        })
+        .catch(() => {
+          // Handle error, possibly log out or reset token
+          setCurrentUser({});
+          setUserToken(null);
+          navigate('/signup');
+        });
+    }
+  }, [userToken, currentUser, setCurrentUser, setUserToken, navigate]);
 
   const handleUserMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -146,8 +166,11 @@ const Home = () => {
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             transformOrigin={{ vertical: 'top', horizontal: 'right' }}
           >
-            {/* Display user email */}
-            <Typography variant="subtitle1" className="px-4 py-2">
+            {/* Display user name and email */}
+            <Typography variant="subtitle1" className="px-4 py-1">
+              {currentUser.name || "No Name"}
+            </Typography>
+            <Typography variant="subtitle2" className="px-4 py-1 text-gray-500">
               {currentUser.email || "No Email"}
             </Typography>
             <MenuItem onClick={handleSettingsClick}>
